@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tiệm Trà Cô Hí - NFC Card</title>
+    <title>Tiệm Trà Cô Hí</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
@@ -27,22 +27,40 @@
                 name: "TIỆM TRÀ CÔ HÍ",
                 subName: "COFFEE & MILKTEA",
                 address: "100 Nguyễn Thị Lựu, Phường Cao Lãnh, Đồng Tháp",
-                phone: "0786.889.639",
+                phone: "0786889639",
                 facebook: "https://www.facebook.com/tiemtracohi2",
                 zaloLink: "https://zalo.me/0786889639",
-                // Đường dẫn ảnh logo bạn đã cung cấp
                 logoUrl: "https://api.deepai.org/job-view-file/60c1d683-9993-4a18-8742-9988459424e6/outputs/output.png", 
                 colors: { primary: "#FF7D1A", secondary: "#5D2E17" }
             };
 
             const handleSaveContact = () => {
-                const vCard = `BEGIN:VCARD\nVERSION:3.0\nFN:${shopData.name}\nTEL:${shopData.phone}\nADR:;;${shopData.address}\nEND:VCARD`;
-                const blob = new Blob([vCard], { type: 'text/vcard' });
+                // Định dạng vCard chuẩn để điện thoại dễ nhận diện
+                const vCard = [
+                    'BEGIN:VCARD',
+                    'VERSION:3.0',
+                    `FN:${shopData.name}`,
+                    `ORG:${shopData.name};${shopData.subName}`,
+                    `TEL;TYPE=CELL,VOICE:${shopData.phone}`,
+                    `ADR;TYPE=WORK,PREF:;;100 Nguyen Thi Luu;Cao Lanh;Dong Thap;;Vietnam`,
+                    `URL:${shopData.facebook}`,
+                    'END:VCARD'
+                ].join('\n');
+
+                const blob = new Blob([vCard], { type: 'text/vcf;charset=utf-8' });
                 const url = window.URL.createObjectURL(blob);
                 const a = document.createElement('a');
+                a.style.display = 'none';
                 a.href = url;
+                // Đặt tên file là .vcf để mobile mở app danh bạ
                 a.download = 'TiemTraCoHi.vcf';
+                document.body.appendChild(a);
                 a.click();
+                
+                setTimeout(() => {
+                    window.URL.revokeObjectURL(url);
+                    document.body.removeChild(a);
+                }, 100);
             };
 
             return (
@@ -50,7 +68,6 @@
                     <div className="w-full max-w-md bg-white shadow-2xl rounded-[2.5rem] overflow-hidden border-[6px] border-stone-900 relative">
                         {/* Header */}
                         <div className="h-64 bg-[#FF7D1A] relative flex flex-col items-center justify-center pt-6">
-                            {/* Thay thế SVG bằng hình ảnh Logo */}
                             <div className="z-10 bg-white p-1 rounded-3xl shadow-lg border-4 border-[#5D2E17]/10 mb-3 transform -rotate-2 overflow-hidden w-40 h-40 flex items-center justify-center">
                                 <img 
                                     src="logo_tiemtracohi.png" 
@@ -82,7 +99,7 @@
                                     <div className="p-3 bg-orange-100 text-[#FF7D1A] rounded-xl"><i data-lucide="phone" className="w-6 h-6"></i></div>
                                     <div className="text-left">
                                         <p className="text-sm font-black text-stone-800 uppercase">Gọi cho tiệm</p>
-                                        <p className="text-xs font-bold text-orange-600">{shopData.phone}</p>
+                                        <p className="text-xs font-bold text-orange-600">0786.889.639</p>
                                     </div>
                                 </div>
                                 <i data-lucide="chevron-right" className="text-stone-300"></i>
